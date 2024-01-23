@@ -44,10 +44,12 @@ def train_on_dialog(model, dialog_history, tokenizer, optimizer, satisfaction_sc
     # ... (попередній код)
 
     model.train()
+    print("Checking if model parameters require gradients...")
+    for name, param in model.named_parameters():
+        print(f"{name} requires_grad: {param.requires_grad}")
     optimizer.zero_grad()
     outputs = model(encoded_full_dialog, start_pos=0)
-
-    print(f"Does outputs have grad_fn? {outputs.grad_fn is not None}")
+    print(f"Does outputs have grad_fn after model training? {outputs.grad_fn is not None}")
 
     # Виконуємо зворотне розповсюдження тільки якщо у outputs є grad_fn
     if outputs.grad_fn:
