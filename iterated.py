@@ -36,7 +36,7 @@ def compute_loss(outputs, targets, satisfaction_score):
 
 def train_on_dialog(model, dialog_history, tokenizer, optimizer, satisfaction_score):
     print(f"dialog_history:\n {dialog_history}")
-    last_responce = dialog_history.pop()["content"]
+    last_responce = dialog_history[-1]["content"]
     # Об'єднання решти діалогу в один текст
     full_dialog = " ".join([dialog["content"] for dialog in dialog_history])
     print(f"full_dialog:\n {full_dialog}")
