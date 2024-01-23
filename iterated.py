@@ -39,8 +39,8 @@ def train_on_dialog(model, dialog_history, tokenizer, optimizer, satisfaction_sc
     last_responce = "Остання відповідь."
     satisfaction_score = 0.5
 
-    encoded_full_dialog = torch.tensor(tokenizer.encode(full_dialog), dtype=torch.long).unsqueeze(0)
-    encoded_last_response = torch.tensor(tokenizer.encode(last_responce), dtype=torch.long).unsqueeze(0)
+    encoded_full_dialog = torch.tensor(tokenizer.encode(full_dialog, requires_grad=True), dtype=torch.long).unsqueeze(0)
+    encoded_last_response = torch.tensor(tokenizer.encode(last_responce, requires_grad=True), dtype=torch.long).unsqueeze(0)
 
     model.train()
     optimizer.zero_grad()
@@ -48,8 +48,9 @@ def train_on_dialog(model, dialog_history, tokenizer, optimizer, satisfaction_sc
     # Зауваження: targets тут має бути частиною encoded_full_dialog, а не окремим викликом моделі
     # Наприклад, якщо last_response є останнім реченням в full_dialog, targets може бути
     # всіма токенами в encoded_full_dialog, крім першого, або підмножиною токенів
-    print(f"Shape of outputs: {outputs.size()}")
-    print(f"Shape of targets (encoded_last_response): {encoded_last_response.size()}")
+    print(f"outputs: {outputs}")
+    # print(f"Shape of outputs: {outputs.size()}")
+    # print(f"Shape of targets (encoded_last_response): {encoded_last_response.size()}")
 
     # Обрізаємо outputs до останніх 7 токенів
     # outputs має форму [1, 21, 32000], отже, ми беремо останні 7 елементів з другого виміру
