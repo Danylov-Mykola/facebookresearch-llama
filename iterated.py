@@ -49,6 +49,8 @@ def train_on_dialog(model, dialog_history, tokenizer, optimizer, satisfaction_sc
     optimizer.zero_grad()
     # outputs = model(encoded_full_dialog, 0)  # формує тензор. Тут 0 - це start_pos, обов'язковий параметр
     outputs = model(encoded_full_dialog, start_pos=0)  # Припускаємо, що модель повертає логіти
+    print(f"outputs: {outputs}")
+
     # targets = tokenizer.encode(last_responce)
     # loss = compute_loss_const(0.5)  # Функція compute_loss_const - це тимчасова затичка
     loss = compute_loss(outputs, encoded_last_response, satisfaction_score)
