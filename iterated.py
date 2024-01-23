@@ -48,6 +48,8 @@ def train_on_dialog(model, dialog_history, tokenizer, optimizer, satisfaction_sc
     # Зауваження: targets тут має бути частиною encoded_full_dialog, а не окремим викликом моделі
     # Наприклад, якщо last_response є останнім реченням в full_dialog, targets може бути
     # всіма токенами в encoded_full_dialog, крім першого, або підмножиною токенів
+    print(f"Shape of outputs: {outputs.size()}")
+    print(f"Shape of targets (encoded_last_response): {encoded_last_response.size()}")
 
     # Тут передбачається, що outputs має форму [batch_size, num_classes, seq_length]
     # і targets має форму [batch_size, seq_length]
