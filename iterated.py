@@ -91,7 +91,7 @@ def main(
         # Періодичне навчання моделі
         if iterations % train_interval == 0:
             train_on_dialog(llama_instance.model, dialog_history, tokenizer, optimizer)
-            torch.save(llama_instance.model.state_dict(), './tmp.pth')
+            # torch.save(llama_instance.model.state_dict(), './tmp.pth')
 
         iterations += 1
 
