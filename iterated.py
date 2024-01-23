@@ -42,16 +42,16 @@ def train_on_dialog(model, dialog_history, tokenizer, optimizer, satisfaction_sc
     print(f"full_dialog:\n {full_dialog}")
 
     # Перетворення об'єднаного діалогу в тензор
-    # encoded_full_dialog = torch.tensor(tokenizer.encode(full_dialog), dtype=torch.long).unsqueeze(0)
-    # encoded_last_responce = torch.tensor(tokenizer.encode(last_responce), dtype=torch.long).unsqueeze(0)
+    encoded_full_dialog = torch.tensor(tokenizer.encode(full_dialog), dtype=torch.long).unsqueeze(0)
+    encoded_last_response = torch.tensor(tokenizer.encode(last_responce), dtype=torch.long).unsqueeze(0)
     # Обчислення втрати та оновлення ваг
     model.train()
     optimizer.zero_grad()
     # outputs = model(encoded_full_dialog, 0)  # формує тензор. Тут 0 - це start_pos, обов'язковий параметр
-    outputs = tokenizer.encode(full_dialog)
-    targets = tokenizer.encode(last_responce)
+    outputs = model(encoded_full_dialog, start_pos=0)  # Припускаємо, що модель повертає логіти
+    # targets = tokenizer.encode(last_responce)
     # loss = compute_loss_const(0.5)  # Функція compute_loss_const - це тимчасова затичка
-    loss = compute_loss(outputs, targets, satisfaction_score)  # Функція compute_loss
+    loss = compute_loss(outputs, encoded_last_response, satisfaction_score)
     loss.backward()
     optimizer.step()
     model.eval()
