@@ -51,9 +51,14 @@ def train_on_dialog(model, dialog_history, tokenizer, optimizer, satisfaction_sc
     print(f"Shape of outputs: {outputs.size()}")
     print(f"Shape of targets (encoded_last_response): {encoded_last_response.size()}")
 
+    # Обрізаємо outputs до останніх 7 токенів
+    # outputs має форму [1, 21, 32000], отже, ми беремо останні 7 елементів з другого виміру
+    outputs_trimmed = outputs[:, -7:, :]
+
     # Тут передбачається, що outputs має форму [batch_size, num_classes, seq_length]
     # і targets має форму [batch_size, seq_length]
-    base_loss = functional.cross_entropy(outputs.view(-1, outputs.size(-2)), encoded_last_response.view(-1))
+    # base_loss = functional.cross_entropy(outputs.view(-1, outputs.size(-2)), encoded_last_response.view(-1))
+    base_loss = functional.cross_entropy(outputs_trimmed.view(-1, 32000), encoded_last_response.view(-1))
     loss = base_loss * (1 - satisfaction_score)
     loss.backward()
     optimizer.step()
