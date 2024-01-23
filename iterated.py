@@ -26,7 +26,7 @@ import torch.nn.functional as functional
 def compute_loss(outputs, targets, satisfaction_score):
     # Використовуємо крос-ентропію як основну функцію втрати
     # Припускаємо, що outputs - це логіти, а targets - це індекси відповідних токенів
-    base_loss = functional.cross_entropy(outputs.view(-1, outputs.size(-1)), targets.view(-1))
+    base_loss = functional.cross_entropy(outputs.view(-1, outputs.size(-2)), targets.view(-1))
     # Використовуємо задоволеність для модифікації основної втрати
     # Якщо задоволеність висока, втрата зменшується, і навпаки
     # Тут ми припускаємо, що satisfaction_score вже нормалізовано до [0, 1]
