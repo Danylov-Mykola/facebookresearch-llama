@@ -39,8 +39,8 @@ def train_on_dialog(model, dialog_history, tokenizer, optimizer, satisfaction_sc
     last_responce = "Остання відповідь."
     satisfaction_score = 0.5
 
-    encoded_full_dialog = torch.tensor(tokenizer.encode(full_dialog, requires_grad=True), dtype=torch.long).unsqueeze(0)
-    encoded_last_response = torch.tensor(tokenizer.encode(last_responce, requires_grad=True), dtype=torch.long).unsqueeze(0)
+    encoded_full_dialog = torch.tensor(tokenizer.encode(full_dialog), dtype=torch.long).unsqueeze(0)
+    encoded_last_response = torch.tensor(tokenizer.encode(last_responce), dtype=torch.long).unsqueeze(0)
 
     model.train()
     optimizer.zero_grad()
