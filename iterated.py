@@ -41,29 +41,46 @@ def train_on_dialog(model, dialog_history, tokenizer, optimizer, satisfaction_sc
 
     encoded_full_dialog = torch.tensor(tokenizer.encode(full_dialog), dtype=torch.long).unsqueeze(0)
     encoded_last_response = torch.tensor(tokenizer.encode(last_responce), dtype=torch.long).unsqueeze(0)
+    # ... (попередній код)
 
     model.train()
     optimizer.zero_grad()
     outputs = model(encoded_full_dialog, start_pos=0)
-    # Зауваження: targets тут має бути частиною encoded_full_dialog, а не окремим викликом моделі
-    # Наприклад, якщо last_response є останнім реченням в full_dialog, targets може бути
-    # всіма токенами в encoded_full_dialog, крім першого, або підмножиною токенів
-    print(f"outputs: {outputs}")
-    # print(f"Shape of outputs: {outputs.size()}")
-    # print(f"Shape of targets (encoded_last_response): {encoded_last_response.size()}")
 
-    # Обрізаємо outputs до останніх 7 токенів
-    # outputs має форму [1, 21, 32000], отже, ми беремо останні 7 елементів з другого виміру
-    outputs_trimmed = outputs[:, -7:, :]
+    print(f"Does outputs have grad_fn? {outputs.grad_fn is not None}")
 
-    # Тут передбачається, що outputs має форму [batch_size, num_classes, seq_length]
-    # і targets має форму [batch_size, seq_length]
-    # base_loss = functional.cross_entropy(outputs.view(-1, outputs.size(-2)), encoded_last_response.view(-1))
-    base_loss = functional.cross_entropy(outputs_trimmed.view(-1, 32000), encoded_last_response.view(-1))
-    loss = base_loss * (1 - satisfaction_score)
-    loss.backward()
-    optimizer.step()
-    model.eval()
+    # Виконуємо зворотне розповсюдження тільки якщо у outputs є grad_fn
+    if outputs.grad_fn:
+        base_loss = functional.cross_entropy(outputs_trimmed.view(-1, 32000), encoded_last_response.view(-1))
+        loss = base_loss * (1 - satisfaction_score)
+        loss.backward()
+        optimizer.step()
+        model.eval()
+    else:
+        print("Cannot perform backpropagation: outputs do not have grad_fn")
+
+    # model.train()
+    # optimizer.zero_grad()
+    # outputs = model(encoded_full_dialog, start_pos=0)
+    # # Зауваження: targets тут має бути частиною encoded_full_dialog, а не окремим викликом моделі
+    # # Наприклад, якщо last_response є останнім реченням в full_dialog, targets може бути
+    # # всіма токенами в encoded_full_dialog, крім першого, або підмножиною токенів
+    # print(f"outputs: {outputs}")
+    # # print(f"Shape of outputs: {outputs.size()}")
+    # # print(f"Shape of targets (encoded_last_response): {encoded_last_response.size()}")
+    #
+    # # Обрізаємо outputs до останніх 7 токенів
+    # # outputs має форму [1, 21, 32000], отже, ми беремо останні 7 елементів з другого виміру
+    # outputs_trimmed = outputs[:, -7:, :]
+    #
+    # # Тут передбачається, що outputs має форму [batch_size, num_classes, seq_length]
+    # # і targets має форму [batch_size, seq_length]
+    # # base_loss = functional.cross_entropy(outputs.view(-1, outputs.size(-2)), encoded_last_response.view(-1))
+    # base_loss = functional.cross_entropy(outputs_trimmed.view(-1, 32000), encoded_last_response.view(-1))
+    # loss = base_loss * (1 - satisfaction_score)
+    # loss.backward()
+    # optimizer.step()
+    # model.eval()
 
 
 def main(
