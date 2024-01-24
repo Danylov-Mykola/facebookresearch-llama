@@ -39,8 +39,8 @@ def train_on_dialog(model, dialog_history, tokenizer, optimizer, satisfaction_sc
     last_responce = "Остання відповідь."
     satisfaction_score = 0.5
 
-    encoded_full_dialog = torch.tensor(tokenizer.encode(full_dialog), requires_grad=True, dtype=torch.long).unsqueeze(0)
-    encoded_last_response = torch.tensor(tokenizer.encode(last_responce), requires_grad=True, dtype=torch.long).unsqueeze(0)
+    encoded_full_dialog = torch.tensor(tokenizer.encode(full_dialog), dtype=torch.long).unsqueeze(0)
+    encoded_last_response = torch.tensor(tokenizer.encode(last_responce), dtype=torch.long).unsqueeze(0)
     # ... (попередній код)
 
     model.train()
@@ -50,6 +50,9 @@ def train_on_dialog(model, dialog_history, tokenizer, optimizer, satisfaction_sc
     optimizer.zero_grad()
     outputs = model(encoded_full_dialog, start_pos=0)
     print(f"Does outputs have grad_fn after model training? {outputs.grad_fn is not None}")
+    # Обрізаємо outputs до останніх 7 токенів
+    # outputs має форму [1, 21, 32000], отже, ми беремо останні 7 елементів з другого виміру
+    outputs_trimmed = outputs[:, -7:, :]
 
     # Виконуємо зворотне розповсюдження тільки якщо у outputs є grad_fn
     if outputs.grad_fn:
